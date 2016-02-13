@@ -36,14 +36,16 @@ describe("Cucumber.Listener", function () {
         expect(listener.getHandlerForEvent).toHaveBeenCalledWith(event);
       });
 
-      it("calls the handler with the event and the callback", function () {
-        listener.hear(event, callback);
-        expect(eventHandler).toHaveBeenCalledWith(event, callback);
-      });
+      describe('when the handler does not expect a callback', function () {
+        it("calls the handler with the event", function () {
+          listener.hear(event, callback);
+          expect(eventHandler).toHaveBeenCalledWith(event);
+        });
 
-      it("does not callback", function () {
-        listener.hear(event, callback);
-        expect(callback).not.toHaveBeenCalled();
+        it("does callback", function () {
+          listener.hear(event, callback);
+          expect(callback).toHaveBeenCalled();
+        });
       });
     });
 
