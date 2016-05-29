@@ -53,7 +53,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {},
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  },
                   "embeddings": [
                     {
                       "mime_type": "image/png",
@@ -69,7 +71,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 }
               ]
             }
@@ -148,7 +152,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {},
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  },
                   "embeddings": [
                     {
                       "mime_type": "image/png",
@@ -164,186 +170,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
-                }
-              ]
-            }
-          ]
-        }
-      ]
-      """
-
-  Scenario: Attach from an around hook (pre scenario)
-    Given a file named "features/a.feature" with:
-      """
-      Feature: some feature
-
-      Scenario: I've declared one step and it is passing
-          Given This step is passing
-      """
-    And a file named "features/step_definitions/cucumber_steps.js" with:
-      """
-      var cucumberSteps = function() {
-        this.Given(/^This step is passing$/, function(callback) { callback(); });
-      };
-      module.exports = cucumberSteps;
-      """
-    And a file named "features/support/hooks.js" with:
-      """
-      var hooks = function () {
-        this.Around(function(scenario, runScenario) {
-          scenario.attach("text");
-
-          runScenario(null, function(callback) {
-            callback();
-          });
-        });
-      };
-
-      module.exports = hooks;
-      """
-    When I run cucumber.js with `-f json`
-    Then it outputs this json:
-      """
-      [
-        {
-          "id": "some-feature",
-          "name": "some feature",
-          "description": "",
-          "line": 1,
-          "keyword": "Feature",
-          "uri": "<current-directory>/features/a.feature",
-          "elements": [
-            {
-              "name": "I've declared one step and it is passing",
-              "id": "some-feature;i've-declared-one-step-and-it-is-passing",
-              "line": 3,
-              "keyword": "Scenario",
-              "description": "",
-              "type": "scenario",
-              "steps": [
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {},
-                  "embeddings": [
-                    {
-                      "mime_type": "text/plain",
-                      "data": "dGV4dA=="
-                    }
-                  ]
-                },
-                {
-                  "name": "This step is passing",
-                  "line": 4,
-                  "keyword": "Given ",
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                }
-              ]
-            }
-          ]
-        }
-      ]
-      """
-
-  Scenario: Attach from an around hook (post scenario)
-    Given a file named "features/a.feature" with:
-      """
-      Feature: some feature
-
-      Scenario: I've declared one step and it is passing
-          Given This step is passing
-      """
-    And a file named "features/step_definitions/cucumber_steps.js" with:
-      """
-      var cucumberSteps = function() {
-        this.Given(/^This step is passing$/, function(callback) { callback(); });
-      };
-      module.exports = cucumberSteps;
-      """
-    And a file named "features/support/hooks.js" with:
-      """
-      var hooks = function () {
-        this.Around(function(scenario, runScenario) {
-          runScenario(null, function(callback) {
-            scenario.attach("text");
-            callback();
-          });
-        });
-      };
-
-      module.exports = hooks;
-      """
-    When I run cucumber.js with `-f json`
-    Then it outputs this json:
-      """
-      [
-        {
-          "id": "some-feature",
-          "name": "some feature",
-          "description": "",
-          "line": 1,
-          "keyword": "Feature",
-          "uri": "<current-directory>/features/a.feature",
-          "elements": [
-            {
-              "name": "I've declared one step and it is passing",
-              "id": "some-feature;i've-declared-one-step-and-it-is-passing",
-              "line": 3,
-              "keyword": "Scenario",
-              "description": "",
-              "type": "scenario",
-              "steps": [
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
-                  "name": "This step is passing",
-                  "line": 4,
-                  "keyword": "Given ",
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {},
-                  "embeddings": [
-                    {
-                      "mime_type": "text/plain",
-                      "data": "dGV4dA=="
-                    }
-                  ]
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 }
               ]
             }
@@ -405,7 +234,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {},
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  },
                   "embeddings": [
                     {
                       "mime_type": "text/plain",
@@ -421,7 +252,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 }
               ]
             }
@@ -484,7 +317,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 },
                 {
                   "keyword": "After ",
@@ -493,7 +328,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {},
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  },
                   "embeddings": [
                     {
                       "mime_type": "text/plain",
@@ -565,7 +402,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  }
                 },
                 {
                   "name": "This step is passing",
@@ -575,7 +414,9 @@ Feature: Attachments
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {},
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  },
                   "embeddings": [
                     {
                       "mime_type": "text/plain",

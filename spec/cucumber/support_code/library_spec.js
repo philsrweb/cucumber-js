@@ -10,7 +10,6 @@ describe("Cucumber.SupportCode.Library", function () {
 
   describe("constructor", function () {
     beforeEach(function () {
-      spyOn(Cucumber.SupportCode, 'AroundHook');
       spyOn(Cucumber.SupportCode, 'Hook');
       spyOn(Cucumber.SupportCode, 'StepDefinition');
       library = Cucumber.SupportCode.Library(rawSupportCode);
@@ -31,80 +30,6 @@ describe("Cucumber.SupportCode.Library", function () {
         supportCodeHelper = rawSupportCode.calls.mostRecent().object;
       });
 
-      describe("Around", function() {
-        var code, aroundHook;
-
-        beforeEach(function () {
-          code       = createSpy("hook code");
-          aroundHook = createSpy("around hook");
-          Cucumber.SupportCode.AroundHook.and.returnValue(aroundHook);
-        });
-
-        describe("with no tag groups", function () {
-          beforeEach(function() {
-            supportCodeHelper.Around(code);
-          });
-
-          it("creates a around hook with the code", function () {
-            expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: []}, jasmine.any(String), jasmine.any(Number));
-          });
-        });
-
-        describe("with a tag group", function () {
-          var tagGroup;
-
-          beforeEach(function () {
-            tagGroup = createSpy("tag group");
-            supportCodeHelper.Around(tagGroup, code);
-          });
-
-          it("creates a around hook with the code", function () {
-            expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: [tagGroup]}, jasmine.any(String), jasmine.any(Number));
-          });
-        });
-
-        describe("with multiple tag groups", function () {
-          var tagGroup1, tagGroup2;
-
-          beforeEach(function () {
-            tagGroup1 = createSpy("tag group 1");
-            tagGroup2 = createSpy("tag group 2");
-            supportCodeHelper.Around(tagGroup1, tagGroup2, code);
-          });
-
-          it("creates a around hook with the code", function () {
-            expect(Cucumber.SupportCode.AroundHook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]}, jasmine.any(String), jasmine.any(Number));
-          });
-        });
-
-        describe("lookupAroundHooksByScenario()", function () {
-          var scenario, aroundHook1, aroundHook2, aroundHook3;
-
-          beforeEach(function () {
-            scenario = createSpy('scenario');
-            aroundHook1 = createSpyWithStubs("around hook 1", {appliesToScenario: true});
-            aroundHook2 = createSpyWithStubs("around hook 2", {appliesToScenario: false});
-            aroundHook3 = createSpyWithStubs("around hook 3", {appliesToScenario: true});
-            Cucumber.SupportCode.AroundHook.and.returnValues(aroundHook1, aroundHook2, aroundHook3);
-            supportCodeHelper.Around();
-            supportCodeHelper.Around();
-            supportCodeHelper.Around();
-          });
-
-          it("checks whether each around hook applies to the scenario", function () {
-            library.lookupAroundHooksByScenario(scenario);
-            expect(aroundHook1.appliesToScenario).toHaveBeenCalledWith(scenario);
-            expect(aroundHook2.appliesToScenario).toHaveBeenCalledWith(scenario);
-            expect(aroundHook3.appliesToScenario).toHaveBeenCalledWith(scenario);
-          });
-
-          it("returns the matching hooks", function () {
-            var result = library.lookupAroundHooksByScenario(scenario);
-            expect(result).toEqual([aroundHook1, aroundHook3]);
-          });
-        });
-      });
-
       describe("Before", function () {
         var code, hook;
 
@@ -114,40 +39,26 @@ describe("Cucumber.SupportCode.Library", function () {
           Cucumber.SupportCode.Hook.and.returnValue(hook);
         });
 
-        describe("with no tag groups", function () {
+        describe("without options", function () {
           beforeEach(function () {
             supportCodeHelper.Before(code);
           });
 
           it("creates a before hook with the code", function () {
-            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: []}, jasmine.any(String), jasmine.any(Number));
+            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {}, jasmine.any(String), jasmine.any(Number));
           });
         });
 
-        describe("with a tag group", function () {
-          var tagGroup;
+        describe("with options", function () {
+          var options;
 
           beforeEach(function () {
-            tagGroup = createSpy("tag group");
-            supportCodeHelper.Before(tagGroup, code);
+            options = {some: 'data'};
+            supportCodeHelper.Before(options, code);
           });
 
           it("creates a before hook with the code", function () {
-            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup]}, jasmine.any(String), jasmine.any(Number));
-          });
-        });
-
-        describe("with multiple tag groups", function () {
-          var tagGroup1, tagGroup2;
-
-          beforeEach(function () {
-            tagGroup1 = createSpy("tag group 1");
-            tagGroup2 = createSpy("tag group 2");
-            supportCodeHelper.Before(tagGroup1, tagGroup2, code);
-          });
-
-          it("creates a before hook with the code", function () {
-            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]}, jasmine.any(String), jasmine.any(Number));
+            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, options, jasmine.any(String), jasmine.any(Number));
           });
         });
 
@@ -188,40 +99,26 @@ describe("Cucumber.SupportCode.Library", function () {
           Cucumber.SupportCode.Hook.and.returnValue(hook);
         });
 
-        describe("with no tag groups", function () {
+        describe("without options", function () {
           beforeEach(function () {
             supportCodeHelper.After(code);
           });
 
           it("creates a before hook with the code", function () {
-            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: []}, jasmine.any(String), jasmine.any(Number));
+            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {}, jasmine.any(String), jasmine.any(Number));
           });
         });
 
         describe("with a tag group", function () {
-          var tagGroup;
+          var options;
 
           beforeEach(function () {
-            tagGroup = createSpy("tag group");
-            supportCodeHelper.After(tagGroup, code);
+            options = {some: 'data'};
+            supportCodeHelper.After(options, code);
           });
 
           it("creates a before hook with the code", function () {
-            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup]}, jasmine.any(String), jasmine.any(Number));
-          });
-        });
-
-        describe("with multiple tag groups", function () {
-          var tagGroup1, tagGroup2;
-
-          beforeEach(function () {
-            tagGroup1 = createSpy("tag group 1");
-            tagGroup2 = createSpy("tag group 2");
-            supportCodeHelper.After(tagGroup1, tagGroup2, code);
-          });
-
-          it("creates a before hook with the code", function () {
-            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, {tags: [tagGroup1, tagGroup2]}, jasmine.any(String), jasmine.any(Number));
+            expect(Cucumber.SupportCode.Hook).toHaveBeenCalledWith(code, options, jasmine.any(String), jasmine.any(Number));
           });
         });
 

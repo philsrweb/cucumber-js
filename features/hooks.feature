@@ -26,17 +26,9 @@ Feature: Environment Hooks
           callback();
         });
 
-        this.Around(function(scenario, runScenario) {
-          runScenario(null, function(callback) {
-            callback();
-          });
-        });
-
         // This should not run
-        this.Around("@foo", function(runScenario) {
-          runScenario(null, function(callback) {
-            callback();
-          });
+        this.After({tags: ["@foo"]}, function(scenario, callback) {
+          callback();
         });
       };
 
@@ -63,22 +55,15 @@ Feature: Environment Hooks
               "type": "scenario",
               "steps": [
                 {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
                   "keyword": "Before ",
                   "hidden": true,
                   "result": {
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  }
                 },
                 {
                   "name": "This step is passing",
@@ -88,7 +73,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 },
                 {
                   "keyword": "After ",
@@ -97,181 +84,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                }
-              ]
-            }
-          ]
-        }
-      ]
-      """
-
-  Scenario: Failing around hook (pre scenario) fails the scenario
-    Given a file named "features/a.feature" with:
-      """
-      Feature: some feature
-
-      Scenario: I've declared one step and it is passing
-          Given This step is passing
-      """
-    And a file named "features/step_definitions/cucumber_steps.js" with:
-      """
-      var cucumberSteps = function() {
-        this.Given(/^This step is passing$/, function(callback) { callback(); });
-      };
-      module.exports = cucumberSteps;
-      """
-    And a file named "features/support/hooks.js" with:
-      """
-      var hooks = function () {
-        this.Around(function(scenario, runScenario) {
-          runScenario('Failure', function(callback) { callback(); });
-        });
-      };
-
-      module.exports = hooks;
-      """
-    When I run cucumber.js with `-f json`
-    Then it outputs this json:
-      """
-      [
-        {
-          "id": "some-feature",
-          "name": "some feature",
-          "description": "",
-          "line": 1,
-          "keyword": "Feature",
-          "uri": "<current-directory>/features/a.feature",
-          "elements": [
-            {
-              "name": "I've declared one step and it is passing",
-              "id": "some-feature;i've-declared-one-step-and-it-is-passing",
-              "line": 3,
-              "keyword": "Scenario",
-              "description": "",
-              "type": "scenario",
-              "steps": [
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "error_message": "<error-message>",
-                    "duration": "<duration>",
-                    "status": "failed"
-                  },
-                  "match": {}
-                },
-                {
-                  "name": "This step is passing",
-                  "line": 4,
-                  "keyword": "Given ",
-                  "result": {
-                    "status": "skipped"
-                  },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                }
-              ]
-            }
-          ]
-        }
-      ]
-      """
-
-  Scenario: Failing around hook (post scenario) fails the scenario
-    Given a file named "features/a.feature" with:
-      """
-      Feature: some feature
-
-      Scenario: I've declared one step and it is passing
-          Given This step is passing
-      """
-    And a file named "features/step_definitions/cucumber_steps.js" with:
-      """
-      var cucumberSteps = function() {
-        this.Given(/^This step is passing$/, function(callback) { callback(); });
-      };
-      module.exports = cucumberSteps;
-      """
-    And a file named "features/support/hooks.js" with:
-      """
-      var hooks = function () {
-        this.Around(function(scenario, runScenario) {
-          // no-op
-
-          runScenario(null, function(callback) {
-            callback('Fail');
-          });
-        });
-      };
-
-      module.exports = hooks;
-      """
-    When I run cucumber.js with `-f json`
-    Then it outputs this json:
-      """
-      [
-        {
-          "id": "some-feature",
-          "name": "some feature",
-          "description": "",
-          "line": 1,
-          "keyword": "Feature",
-          "uri": "<current-directory>/features/a.feature",
-          "elements": [
-            {
-              "name": "I've declared one step and it is passing",
-              "id": "some-feature;i've-declared-one-step-and-it-is-passing",
-              "line": 3,
-              "keyword": "Scenario",
-              "description": "",
-              "type": "scenario",
-              "steps": [
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
-                  "name": "This step is passing",
-                  "line": 4,
-                  "keyword": "Given ",
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "error_message": "<error-message>",
-                    "duration": "<duration>",
-                    "status": "failed"
-                  },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:6"
+                  }
                 }
               ]
             }
@@ -333,7 +148,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "failed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  }
                 },
                 {
                   "name": "This step is passing",
@@ -342,7 +159,9 @@ Feature: Environment Hooks
                   "result": {
                     "status": "skipped"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 }
               ]
             }
@@ -404,7 +223,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 },
                 {
                   "keyword": "After ",
@@ -414,7 +235,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "failed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  }
                 }
               ]
             }
@@ -441,20 +264,8 @@ Feature: Environment Hooks
     And a file named "features/support/hooks.js" with:
       """
       var hooks = function () {
-        this.Around(function(scenario, runScenario) {
-          runScenario("failure", function(callback) {
-            callback();
-          });
-        });
-
-        this.Around(function(scenario, runScenario) {
-          runScenario(null, function(callback) {
-            callback();
-          });
-        });
-
         this.Before(function(scenario, callback) {
-          callback();
+          callback('failure');
         });
 
         this.After(function(scenario, callback) {
@@ -485,32 +296,16 @@ Feature: Environment Hooks
               "type": "scenario",
               "steps": [
                 {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "error_message": "<error-message>",
-                    "duration": "<duration>",
-                    "status": "failed"
-                  },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
                   "keyword": "Before ",
                   "hidden": true,
                   "result": {
                     "duration": "<duration>",
-                    "status": "passed"
+                    "error_message": "<error-message>",
+                    "status": "failed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  }
                 },
                 {
                   "name": "This step is passing",
@@ -519,7 +314,9 @@ Feature: Environment Hooks
                   "result": {
                     "status": "skipped"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 },
                 {
                   "keyword": "After ",
@@ -528,25 +325,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:6"
+                  }
                 }
               ]
             }
@@ -580,7 +361,7 @@ Feature: Environment Hooks
 
       module.exports = function() {
         this.World = WorldConstructor;
-      };  
+      };
       """
     And a file named "features/support/hooks.js" with:
       """
@@ -593,16 +374,6 @@ Feature: Environment Hooks
         this.After(function(scenario) {
           if (!this.isWorld())
             throw Error("Expected this to be world");
-        });
-
-        this.Around(function(scenario, runScenario) {
-          if (!this.isWorld())
-            throw Error("Expected this to be world");
-
-          runScenario(null, function() {
-            if (!this.isWorld())
-              throw Error("Expected this to be world")
-          });
         });
       };
 
@@ -629,22 +400,15 @@ Feature: Environment Hooks
               "type": "scenario",
               "steps": [
                 {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
-                },
-                {
                   "keyword": "Before ",
                   "hidden": true,
                   "result": {
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:2"
+                  }
                 },
                 {
                   "name": "This step is passing",
@@ -654,7 +418,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/step_definitions/cucumber_steps.js:2"
+                  }
                 },
                 {
                   "keyword": "After ",
@@ -663,16 +429,9 @@ Feature: Environment Hooks
                     "duration": "<duration>",
                     "status": "passed"
                   },
-                  "match": {}
-                },
-                {
-                  "keyword": "Around ",
-                  "hidden": true,
-                  "result": {
-                    "duration": "<duration>",
-                    "status": "passed"
-                  },
-                  "match": {}
+                  "match": {
+                    "location": "<current-directory>/features/support/hooks.js:7"
+                  }
                 }
               ]
             }
